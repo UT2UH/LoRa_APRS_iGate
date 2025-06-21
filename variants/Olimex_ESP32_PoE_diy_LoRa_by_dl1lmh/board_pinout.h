@@ -12,7 +12,7 @@
     #define GPIO_WAKEUP_PIN     GPIO_NUM_36
 
     //LAN7810A-EZC Ethernet, RMII LAN8720 (Olimex, etc.)
-    #define HAS_LAN
+    #define HAS_ETH
     #undef  ETH_PHY_TYPE
     #undef  ETH_PHY_ADDR
     #define ETH_PHY_TYPE        ETH_PHY_LAN8720

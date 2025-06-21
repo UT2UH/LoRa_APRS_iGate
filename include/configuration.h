@@ -18,6 +18,11 @@ public:
     int     timeout;
 };
 
+class ETHERNET {
+public:
+    bool use_lan;
+};
+
 class BEACON {
 public:
     double  latitude;
@@ -138,6 +143,7 @@ public:
     String                  personalNote;
     String                  blacklist;
     std::vector<WiFi_AP>    wifiAPs;
+    ETHERNET                ethernet;
     WiFi_Auto_AP            wifiAutoAP;
     BEACON                  beacon;
     APRS_IS                 aprs_is;

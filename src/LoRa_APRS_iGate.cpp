@@ -35,6 +35,7 @@ ___________________________________________________________________*/
 #include "sleep_utils.h"
 #include "lora_utils.h"
 #include "wifi_utils.h"
+#include "eth_utils.h"
 #include "digi_utils.h"
 #include "gps_utils.h"
 #include "web_utils.h"
@@ -68,6 +69,8 @@ uint32_t            lastBatteryCheck        = 0;
 bool                backUpDigiMode          = false;
 bool                modemLoggedToAPRSIS     = false;
 
+extern bool         EthConnected;
+
 #ifdef HAS_EPAPER
     uint32_t        lastEpaperTime          = 0;
     extern String   lastEpaperText;
@@ -95,6 +98,9 @@ void setup() {
 
     SLEEP_Utils::setup();
     WIFI_Utils::setup();
+    #ifdef HAS_ETH
+        ETH_Utils::setup();
+    #endif
     NTP_Utils::setup();
     SYSLOG_Utils::setup();
     WX_Utils::setup();
@@ -144,11 +150,20 @@ void loop() {
             thirdLine = Utils::getLocalIP();
         #endif
 
+        WIFI_Utils::checkWiFi();
+        if (!Config.ethernet.use_lan) WIFI_Utils::checkWiFi();
+        #ifdef HAS_ETH
+            if (Config.ethernet.use_lan) ETH_Utils::checkETH();
+        #endif
+
         #ifdef HAS_A7670
             if (Config.aprs_is.active && !modemLoggedToAPRSIS) A7670_Utils::APRS_IS_connect();
         #else
-            WIFI_Utils::checkWiFi();
             if (Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
+        if (!Config.ethernet.use_lan && Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
+            #ifdef HAS_ETH
+                if (Config.ethernet.use_lan && Config.aprs_is.active && EthConnected && !espClient.connected()) APRS_IS_Utils::connect();
+            #endif
         #endif
 
         NTP_Utils::update();

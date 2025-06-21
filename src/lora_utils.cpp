@@ -12,6 +12,7 @@
 
 extern Configuration    Config;
 extern uint32_t         lastRxTime;
+extern      bool            EthConnected;
 
 extern std::vector<ReceivedPacket> receivedPackets;
 
@@ -153,7 +154,8 @@ namespace LoRa_Utils {
         int state = radio.transmit("\x3c\xff\x01" + newPacket);
         transmitFlag = true;
         if (state == RADIOLIB_ERR_NONE) {
-            if (Config.syslog.active && WiFi.status() == WL_CONNECTED) {
+            if ((!Config.ethernet.use_lan && Config.syslog.active && WiFi.status() == WL_CONNECTED) ||
+                (Config.ethernet.use_lan && Config.syslog.active && EthConnected)) {
                 SYSLOG_Utils::log(3, newPacket, 0, 0.0, 0);    // TX
             }
             Utils::print("---> LoRa Packet Tx : ");
@@ -213,7 +215,8 @@ namespace LoRa_Utils {
                                 receivedPackets.push_back(receivedPacket);
                             }
 
-                            if (Config.syslog.active && WiFi.status() == WL_CONNECTED) {
+                        if ((!Config.ethernet.use_lan && Config.syslog.active && WiFi.status() == WL_CONNECTED) ||
+                                (Config.ethernet.use_lan && Config.syslog.active && EthConnected)) {
                                 SYSLOG_Utils::log(1, packet, rssi, snr, freqError); // RX
                             }
                         } else {
@@ -227,7 +230,8 @@ namespace LoRa_Utils {
                     snr         = radio.getSNR();
                     freqError   = radio.getFrequencyError();
                     Utils::println(F("CRC error!"));
-                    if (Config.syslog.active && WiFi.status() == WL_CONNECTED) {
+                    if ((!Config.ethernet.use_lan && Config.syslog.active && WiFi.status() == WL_CONNECTED) ||
+                        (Config.ethernet.use_lan && Config.syslog.active && EthConnected)) {
                         SYSLOG_Utils::log(0, packet, rssi, snr, freqError); // CRC
                     }
                     packet = "";

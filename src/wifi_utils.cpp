@@ -154,7 +154,7 @@ namespace WIFI_Utils {
     }
 
     void setup() {
-        if (Config.digi.ecoMode == 0) startWiFi();
+        if ((!Config.digi.ecoMode) && !Config.ethernet.use_lan) startWiFi();
         btStop();
     }
 

@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 #include "configuration.h"
+#include "board_pinout.h"
 #include "ota_utils.h"
 #include "web_utils.h"
 #include "display.h"
@@ -10,17 +11,23 @@ extern Configuration               Config;
 extern uint32_t                    lastBeaconTx;
 extern std::vector<ReceivedPacket> receivedPackets;
 
-extern const char web_index_html[] asm("_binary_data_embed_index_html_gz_start");
-extern const char web_index_html_end[] asm("_binary_data_embed_index_html_gz_end");
+#ifdef HAS_ETH
+    extern const char web_index_html[] asm("_binary_data_embed_indexlan_html_gz_start");
+    extern const char web_index_html_end[] asm("_binary_data_embed_indexlan_html_gz_end");
+    extern const char web_script_js[] asm("_binary_data_embed_scriptlan_js_gz_start");
+    extern const char web_script_js_end[] asm("_binary_data_embed_scriptlan_js_gz_end");
+#else
+    extern const char web_index_html[] asm("_binary_data_embed_index_html_gz_start");
+    extern const char web_index_html_end[] asm("_binary_data_embed_index_html_gz_end");
+    extern const char web_script_js[] asm("_binary_data_embed_script_js_gz_start");
+    extern const char web_script_js_end[] asm("_binary_data_embed_script_js_gz_end");
+#endif
 extern const size_t web_index_html_len = web_index_html_end - web_index_html;
+extern const size_t web_script_js_len = web_script_js_end - web_script_js;
 
 extern const char web_style_css[] asm("_binary_data_embed_style_css_gz_start");
 extern const char web_style_css_end[] asm("_binary_data_embed_style_css_gz_end");
 extern const size_t web_style_css_len = web_style_css_end - web_style_css;
-
-extern const char web_script_js[] asm("_binary_data_embed_script_js_gz_start");
-extern const char web_script_js_end[] asm("_binary_data_embed_script_js_gz_end");
-extern const size_t web_script_js_len = web_script_js_end - web_script_js;
 
 extern const char web_bootstrap_css[] asm("_binary_data_embed_bootstrap_css_gz_start");
 extern const char web_bootstrap_css_end[] asm("_binary_data_embed_bootstrap_css_gz_end");
@@ -116,7 +123,7 @@ namespace WEB_Utils {
         Config.wifiAutoAP.password      = request->getParam("wifi.autoAP.password", true)->value();
         Config.wifiAutoAP.timeout       = request->getParam("wifi.autoAP.timeout", true)->value().toInt();
 
-
+        Config.ethernet.use_lan         = request->getParam("ethernet.use_lan", true);
         Config.aprs_is.active           = request->hasParam("aprs_is.active", true);
         Config.aprs_is.passcode         = request->getParam("aprs_is.passcode", true)->value();
         Config.aprs_is.server           = request->getParam("aprs_is.server", true)->value();

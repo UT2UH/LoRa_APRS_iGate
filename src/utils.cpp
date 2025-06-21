@@ -1,5 +1,6 @@
 #include <TinyGPS++.h>
 #include <WiFi.h>
+#include <ETH.h>
 #include "configuration.h"
 #include "station_utils.h"
 #include "battery_utils.h"
@@ -38,6 +39,7 @@ extern bool                 backUpDigiMode;
 extern bool                 shouldSleepLowVoltage;
 extern bool                 transmitFlag;
 extern bool                 passcodeValid;
+extern bool                 EthConnected;
 
 extern std::vector<LastHeardStation>    lastHeardStations;
 
@@ -59,7 +61,7 @@ namespace Utils {
             status.concat(",");
             status.concat(Config.beacon.path);
         }
-        if (WiFi.status() == WL_CONNECTED && Config.aprs_is.active && Config.beacon.sendViaAPRSIS) {
+        if ((WiFi.status() == WL_CONNECTED || EthConnected) && Config.aprs_is.active && Config.beacon.sendViaAPRSIS) {
             delay(1000);
             status.concat(",qAC:>https://github.com/richonguzman/LoRa_APRS_iGate ");
             status.concat(versionDate);
@@ -77,11 +79,13 @@ namespace Utils {
 
     String getLocalIP() {
         if (Config.digi.ecoMode == 1 || Config.digi.ecoMode == 2) {
-            return "** WiFi AP  Killed **";
-        } else if (!WiFiConnected) {
+            return "** WiFi AP Disabled **";
+        } else if (!WiFiConnected && !Config.ethernet.use_lan) {
             return "IP :  192.168.4.1";
         } else if (backUpDigiMode) {
             return "- BACKUP DIGI MODE -";
+        } else if (Config.ethernet.use_lan && EthConnected) {
+            return "IP :  " + String(ETH.localIP()[0]) + "." + String(ETH.localIP()[1]) + "." + String(ETH.localIP()[2]) + "." + String(ETH.localIP()[3]);
         } else {
             return "IP :  " + String(WiFi.localIP()[0]) + "." + String(WiFi.localIP()[1]) + "." + String(WiFi.localIP()[2]) + "." + String(WiFi.localIP()[3]);
         }

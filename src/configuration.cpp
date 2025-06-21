@@ -23,6 +23,7 @@ void Configuration::writeFile() {
 
     data["wifi"]["autoAP"]["password"]          = wifiAutoAP.password;
     data["wifi"]["autoAP"]["timeout"]           = wifiAutoAP.timeout;
+    data["ethernet"]["use_lan"]                 = ethernet.use_lan;
 
     data["callsign"]                            = callsign;
 
@@ -147,6 +148,8 @@ bool Configuration::readFile() {
         wifiAutoAP.password             = data["wifi"]["autoAP"]["password"] | "1234567890";
         wifiAutoAP.timeout              = data["wifi"]["autoAP"]["timeout"] | 10;
 
+        ethernet.use_lan                = data["ethernet"]["use_lan"] | false;
+
         callsign                        = data["callsign"] | "NOCALL-10";
         rememberStationTime             = data["other"]["rememberStationTime"] | 30;
 
@@ -264,6 +267,8 @@ void Configuration::init() {
 
     wifiAutoAP.password             = "1234567890";
     wifiAutoAP.timeout              = 10;
+
+    ethernet.use_lan                = false;
 
     callsign                        = "N0CALL-10";
 

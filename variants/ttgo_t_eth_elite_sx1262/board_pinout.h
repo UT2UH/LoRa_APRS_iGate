@@ -15,7 +15,7 @@
     #define USE_LDO                 true
 
     //W5500 Ethernet, SPI using ESP-IDF's driver
-    #define HAS_LAN
+    #define HAS_ETH
     #undef  ETH_PHY_TYPE
     #undef  ETH_PHY_ADDR
     #define ETH_PHY_TYPE            ETH_PHY_W5500
@@ -44,8 +44,7 @@
 
     //  GPS
     #define HAS_GPS
-    #define GPS_RX                  42
     #define GPS_TX                  39
-    #define GPS_BAUDRATE         38400
+    #define GPS_RX                  42
 
 #endif
