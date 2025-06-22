@@ -115,6 +115,13 @@ void Configuration::writeFile() {
     data["remoteManagement"]["managers"]        = remoteManagement.managers;
     data["remoteManagement"]["rfOnly"]          = remoteManagement.rfOnly;
 
+    data["mqtt"]["active"]                      = mqtt.active;
+    data["mqtt"]["server"]                      = mqtt.server;
+    data["mqtt"]["topic"]                       = mqtt.topic;
+    data["mqtt"]["username"]                    = mqtt.username;
+    data["mqtt"]["password"]                    = mqtt.password;
+    data["mqtt"]["port"]                        = mqtt.port;
+
     serializeJson(data, configFile);
 
     configFile.close();
@@ -356,6 +363,13 @@ void Configuration::init() {
 
     remoteManagement.managers       = "";
     remoteManagement.rfOnly         = true;
+
+    mqtt.active                     = false;
+    mqtt.server                     = "";
+    mqtt.topic                      = "aprs-igate";
+    mqtt.username                   = "";
+    mqtt.password                   = "";
+    mqtt.port                       = 1883;
 
     Serial.println("All is Written!");
 }

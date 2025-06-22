@@ -36,6 +36,7 @@ ___________________________________________________________________*/
 #include "lora_utils.h"
 #include "wifi_utils.h"
 #include "eth_utils.h"
+#include <mqtt_utils.h>
 #include "digi_utils.h"
 #include "gps_utils.h"
 #include "web_utils.h"
@@ -51,7 +52,8 @@ ___________________________________________________________________*/
 
 String              versionDate             = "2025-06-20";
 Configuration       Config;
-WiFiClient          espClient;
+WiFiClient          aprsIsClient;
+WiFiClient          mqttClient;
 #ifdef HAS_GPS
     HardwareSerial  gpsSerial(1);
     TinyGPSPlus     gps;
@@ -106,6 +108,7 @@ void setup() {
     WX_Utils::setup();
     WEB_Utils::setup();
     TNC_Utils::setup();
+    MQTT_Utils::setup(mqttClient);
     #ifdef HAS_A7670
         A7670_Utils::setup();
     #endif
@@ -159,15 +162,18 @@ void loop() {
         #ifdef HAS_A7670
             if (Config.aprs_is.active && !modemLoggedToAPRSIS) A7670_Utils::APRS_IS_connect();
         #else
-            if (Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
-        if (!Config.ethernet.use_lan && Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
+            if (Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !aprsIsClient.connected()) APRS_IS_Utils::connect();
+            if (!Config.ethernet.use_lan && Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !aprsIsClient.connected()) APRS_IS_Utils::connect();
+            if (!Config.ethernet.use_lan && Config.mqtt.active && (WiFi.status() == WL_CONNECTED) && !mqttClient.connected()) MQTT_Utils::connect();
             #ifdef HAS_ETH
-                if (Config.ethernet.use_lan && Config.aprs_is.active && EthConnected && !espClient.connected()) APRS_IS_Utils::connect();
-            #endif
+                if (Config.ethernet.use_lan && Config.aprs_is.active && EthConnected && !aprsIsClient.connected()) APRS_IS_Utils::connect();
+                if (Config.ethernet.use_lan && Config.mqtt.active && EthConnected && !mqttClient.connected()) MQTT_Utils::connect();
+            #endif           
         #endif
 
         NTP_Utils::update();
         TNC_Utils::loop();
+        MQTT_Utils::loop();
 
         Utils::checkDisplayInterval();
         Utils::checkBeaconInterval();
@@ -194,6 +200,10 @@ void loop() {
             }
             if (Config.tnc.enableSerial) { // If Serial KISS enabled
                 TNC_Utils::sendToSerial(packet); // Send received packet to Serial KISS
+            }
+            
+            if (Config.mqtt.active) { // If MQTT enabled
+                MQTT_Utils::sendToMqtt(packet); // Send received packet to MQTT
             }
         }
 
