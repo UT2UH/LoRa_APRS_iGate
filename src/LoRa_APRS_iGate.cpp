@@ -153,7 +153,6 @@ void loop() {
             thirdLine = Utils::getLocalIP();
         #endif
 
-        WIFI_Utils::checkWiFi();
         if (!Config.ethernet.use_lan) WIFI_Utils::checkWiFi();
         #ifdef HAS_ETH
             if (Config.ethernet.use_lan) ETH_Utils::checkETH();
