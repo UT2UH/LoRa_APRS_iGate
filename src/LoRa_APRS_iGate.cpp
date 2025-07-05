@@ -158,8 +158,7 @@ void loop() {
         #ifdef HAS_A7670
             if (Config.aprs_is.active && !modemLoggedToAPRSIS) A7670_Utils::APRS_IS_connect();
         #else
-            if (Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
-        if (!Config.ethernet.use_lan && Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
+            if (!Config.ethernet.use_lan && Config.aprs_is.active && (WiFi.status() == WL_CONNECTED) && !espClient.connected()) APRS_IS_Utils::connect();
             #ifdef HAS_ETH
                 if (Config.ethernet.use_lan && Config.aprs_is.active && EthConnected && !espClient.connected()) APRS_IS_Utils::connect();
             #endif
