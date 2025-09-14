@@ -1,7 +1,11 @@
 #ifndef BOARD_PINOUT_H_
 #define BOARD_PINOUT_H_
 
-    //  LoRa Radio
+
+    // KISS TNC is on USBCDC!
+    // OTG_SW must be in OTG position!
+
+    //  LoRa Radio - NiceRF SX1262MiniF27
     #define RADIO_SCLK_PIN          10
     #define RADIO_MISO_PIN           9
     #define RADIO_MOSI_PIN          11

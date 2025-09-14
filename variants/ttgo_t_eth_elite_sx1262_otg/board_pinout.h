@@ -1,9 +1,8 @@
 #ifndef BOARD_PINOUT_H_
 #define BOARD_PINOUT_H_
 
-    // KISS TNC is on UART0
-    #define TNC_RXD                 44
-    #define TNC_TXD                 43
+    // KISS TNC is on USBCDC!
+    // OTG_SW must be in OTG position!
 
     //  LoRa Radio - TTGO native SX1262 module on the LoRA shield
     #define RADIO_SCLK_PIN          10
